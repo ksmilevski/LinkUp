@@ -1,41 +1,42 @@
 package mk.ukim.finki.linkup
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.*
+import android.widget.Button
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import mk.ukim.finki.linkup.adapter.RecentChatRecyclerAdapter
-import mk.ukim.finki.linkup.adapter.SearchUserRecyclerAdapter
 import mk.ukim.finki.linkup.models.ChatRoomModel
-import mk.ukim.finki.linkup.models.UserModel
 import mk.ukim.finki.linkup.utils.FirebaseUtil
-
 
 class ChatFragment : Fragment() {
 
-    lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecentChatRecyclerAdapter
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        var view = inflater.inflate(R.layout.fragment_chat, container, false)
+        val view = inflater.inflate(R.layout.fragment_chat, container, false)
+
         recyclerView = view.findViewById(R.id.recyler_view)
         setupRecyclerView()
+
+        val createGroupBtn = view.findViewById<Button>(R.id.create_group_btn)
+        createGroupBtn.setOnClickListener {
+            val intent = Intent(requireContext(), CreateGroupActivity::class.java)
+            startActivity(intent)
+        }
 
         return view
     }
 
-    fun setupRecyclerView() {
-        //da go vrati chatroom-ot kade shto e nashiot userId
+    private fun setupRecyclerView() {
         val query = FirebaseUtil.allChatroomCollectionReference()
             .whereArrayContains("userIds", FirebaseUtil.currentUserId() ?: "")
             .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
@@ -44,7 +45,7 @@ class ChatFragment : Fragment() {
             .setQuery(query, ChatRoomModel::class.java)
             .build()
 
-        adapter = RecentChatRecyclerAdapter(options, context ?: requireContext())
+        adapter = RecentChatRecyclerAdapter(options, requireContext())
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         adapter.startListening()
@@ -52,7 +53,7 @@ class ChatFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (::adapter.isInitialized) { //dali e inicijaliziran (dali e povikan setupSearchRecyclerView) bidejki najgore e lateinit
+        if (::adapter.isInitialized) {
             adapter.startListening()
         }
     }
@@ -70,6 +71,4 @@ class ChatFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
     }
-
-
 }

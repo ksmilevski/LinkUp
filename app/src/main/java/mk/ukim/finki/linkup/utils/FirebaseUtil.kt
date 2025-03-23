@@ -69,11 +69,9 @@ class FirebaseUtil {
         fun logout(){
             FirebaseAuth.getInstance().signOut()
         }
-
-
-
-
-
+        fun getUserReference(userId: String): DocumentReference {
+            return FirebaseFirestore.getInstance().collection("users").document(userId)
+        }
 
     }
 }

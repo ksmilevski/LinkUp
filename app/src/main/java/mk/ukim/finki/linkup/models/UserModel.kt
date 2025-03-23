@@ -7,7 +7,9 @@ data class UserModel (
     var phone: String = "",
     var username: String = "",
     var createdTimestamp: Timestamp = Timestamp.now(),
-    var userId: String = ""
+    var userId: String = "",
+    var isSelected: Boolean = false // <-- NEW
+
 
 //    constructor(createdTimestamp: Timestamp, username: String, phone: String) {
 //        this.createdTimestamp = createdTimestamp

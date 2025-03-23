@@ -1,13 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
 
+    <!-- Sender name for group chats (left side / other user) -->
+    <TextView
+        android:id="@+id/sender_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sender"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone" />
+
+    <!-- Sender name for current user (right side) -->
+    <TextView
+        android:id="@+id/sender_name_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Me"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone" />
+
+    <!-- Left chat layout (incoming) -->
     <LinearLayout
         android:id="@+id/left_chat_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/sender_name_textview"
         android:background="@drawable/edit_text_rounded_corner"
         android:backgroundTint="@color/chat_color_sender"
         android:padding="8dp"
@@ -18,15 +43,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:text="Hello how are you" />
+            android:textSize="18sp" />
     </LinearLayout>
+
+    <!-- Right chat layout (you) -->
     <LinearLayout
         android:id="@+id/right_chat_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/edit_text_rounded_corner"
         android:backgroundTint="@color/chat_color_receiver"
+        android:layout_below="@id/sender_name_right"
         android:layout_alignParentEnd="true"
         android:padding="8dp"
         android:layout_marginStart="80dp">
@@ -35,8 +62,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:text="I am fine thanks"/>
+            android:textSize="18sp"/>
     </LinearLayout>
-
 </RelativeLayout>

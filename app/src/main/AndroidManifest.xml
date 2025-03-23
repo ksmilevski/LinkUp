@@ -25,6 +25,10 @@
             android:name=".LoginOtpActivity"
             android:exported="false" />
         <activity
+            android:name=".CreateGroupActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".LoginPhoneNumberActivity"
             android:exported="false" />
         <activity

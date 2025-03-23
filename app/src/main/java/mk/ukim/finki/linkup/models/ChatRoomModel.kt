@@ -8,6 +8,9 @@ data class ChatRoomModel (
     var userIds: List<String> = emptyList(),
     var lastMessageTimestamp: Timestamp = Timestamp.now(),
     var lastMessageSenderId: String = "",
-    var lastMessage: String = ""
+    var lastMessage: String = "",
 
+    //new
+    var isGroup: Boolean = false,
+    var groupName: String = ""
 )
