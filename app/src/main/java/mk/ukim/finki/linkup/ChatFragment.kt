@@ -32,6 +32,11 @@ class ChatFragment : Fragment() {
             val intent = Intent(requireContext(), CreateGroupActivity::class.java)
             startActivity(intent)
         }
+        val createEventBtn = view.findViewById<Button>(R.id.create_event_btn)
+        createEventBtn.setOnClickListener {
+            val intent = Intent(context, CreateEventActivity::class.java)
+            startActivity(intent)
+        }
 
         return view
     }

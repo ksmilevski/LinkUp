@@ -31,7 +31,7 @@ class RecentChatRecyclerAdapter(
 
             if (lastMessageSentByMe) {
                 holder.lastMessageText.text = "You: ${model.lastMessage}"
-            } else {
+            } else if (!model.lastMessageSenderId.isNullOrEmpty()) {
                 FirebaseUtil.getUserReference(model.lastMessageSenderId)
                     .get()
                     .addOnSuccessListener {
@@ -39,7 +39,10 @@ class RecentChatRecyclerAdapter(
                         val senderName = user?.username ?: "Someone"
                         holder.lastMessageText.text = "$senderName: ${model.lastMessage}"
                     }
+            } else {
+                holder.lastMessageText.text = model.lastMessage // fallback
             }
+
 
             holder.itemView.setOnClickListener {
                 val intent = Intent(context, ChatActivity::class.java).apply {

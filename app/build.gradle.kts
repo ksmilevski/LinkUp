@@ -69,5 +69,6 @@ dependencies {
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.2")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
 
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
 }

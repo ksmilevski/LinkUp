@@ -1,6 +1,8 @@
 package mk.ukim.finki.linkup
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
@@ -15,6 +17,8 @@ import mk.ukim.finki.linkup.models.UserModel
 import mk.ukim.finki.linkup.utils.AndroidUtil
 import mk.ukim.finki.linkup.utils.FirebaseUtil
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import mk.ukim.finki.linkup.models.ChatMessageModel
 
@@ -29,11 +33,16 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var chatroomId: String
     private lateinit var adapter: ChatRecyclerAdapter
-
+    private lateinit var resendInviteButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+
+        resendInviteButton = findViewById(R.id.resend_invite_button)
+        resendInviteButton.setOnClickListener {
+            resendInvitations()
+        }
 
         chatroomId = intent.getStringExtra("chatroomId") ?: run {
             val otherUserModel = AndroidUtil.getUserModelFromIntent(intent)
@@ -110,6 +119,29 @@ class ChatActivity : AppCompatActivity() {
 
 
     //proveruva dali postoi veke chatroom ili da kreira nova
+//    private fun getOrCreateChatroomModel() {
+//        FirebaseUtil.getChatroomReference(chatroomId).get().addOnSuccessListener { document ->
+//            if (document.exists()) {
+//                chatroomModel = document.toObject(ChatRoomModel::class.java)!!
+//
+//                if (chatroomModel.isGroup) {
+//                    otherUsername.text = chatroomModel.groupName
+//                } else {
+//                    val otherUserId = chatroomModel.userIds.first { it != FirebaseUtil.currentUserId() }
+//                    FirebaseUtil.getUserReference(otherUserId).get().addOnSuccessListener { userDoc ->
+//                        val otherUser = userDoc.toObject(UserModel::class.java)
+//                        otherUsername.text = otherUser?.username ?: "User"
+//                    }
+//                }
+//
+//                setupChatRecyclerView() // ✅ only call after setting up model and UI
+//            } else {
+//                Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
+//                finish()
+//            }
+//        }
+//    }
+
     private fun getOrCreateChatroomModel() {
         FirebaseUtil.getChatroomReference(chatroomId).get().addOnSuccessListener { document ->
             if (document.exists()) {
@@ -117,6 +149,12 @@ class ChatActivity : AppCompatActivity() {
 
                 if (chatroomModel.isGroup) {
                     otherUsername.text = chatroomModel.groupName
+
+                    if (chatroomModel.creatorId == FirebaseUtil.currentUserId()) {
+                        resendInviteButton.visibility = View.VISIBLE
+                    } else {
+                        resendInviteButton.visibility = View.GONE
+                    }
                 } else {
                     val otherUserId = chatroomModel.userIds.first { it != FirebaseUtil.currentUserId() }
                     FirebaseUtil.getUserReference(otherUserId).get().addOnSuccessListener { userDoc ->
@@ -125,13 +163,31 @@ class ChatActivity : AppCompatActivity() {
                     }
                 }
 
-                setupChatRecyclerView() // ✅ only call after setting up model and UI
+                setupChatRecyclerView()
             } else {
                 Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
     }
+    private fun resendInvitations() {
+        FirebaseFirestore.getInstance().collection("events")
+            .whereEqualTo("chatroomId", chatroomId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.isEmpty) {
+                    val eventDoc = snapshot.documents[0]
+                    eventDoc.reference.update("inviteVersion", FieldValue.increment(1))
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Invitations resent!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Failed to resend invitations!", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+    }
+
 
 }
 

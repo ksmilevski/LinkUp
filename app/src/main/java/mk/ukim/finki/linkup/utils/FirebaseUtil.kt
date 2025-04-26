@@ -70,6 +70,7 @@ class FirebaseUtil {
             FirebaseAuth.getInstance().signOut()
         }
         fun getUserReference(userId: String): DocumentReference {
+            require(userId.isNotEmpty()) { "Invalid userId: cannot be empty" }
             return FirebaseFirestore.getInstance().collection("users").document(userId)
         }
 

@@ -79,9 +79,11 @@ class CreateGroupActivity : AppCompatActivity() {
         val chatroomId = UUID.randomUUID().toString()
 
         val allUserIds = selectedUserIds.toMutableList()
-        FirebaseUtil.currentUserId()?.let {
-            if (!allUserIds.contains(it)) allUserIds.add(it)
+        val currentId = FirebaseUtil.currentUserId()
+        if (!currentId.isNullOrEmpty() && !allUserIds.contains(currentId)) {
+            allUserIds.add(currentId)
         }
+
 
         val chatroom = ChatRoomModel(
             chatroomId = chatroomId,
