@@ -129,14 +129,13 @@ class MainActivity : AppCompatActivity() {
                                 val savedVersion = sharedPreferences.getLong(event.eventId, -1)
 
                                 if (savedVersion >= event.inviteVersion) {
-                                    // User declined this version, skip showing popup
                                     android.util.Log.d("NearbyCheck", "User already declined event ${event.eventId} (inviteVersion=$savedVersion)")
                                 } else {
-                                        checkIfUserIsInChat(event.chatroomId, event.eventId, event.inviteVersion)
+                                    // 👇 now pass eventName
+                                    checkIfUserIsInChat(event.chatroomId, event.eventId, event.inviteVersion, event.eventName)
                                 }
                             }
                         }
-
                     }
             } else {
                 android.util.Log.d("NearbyCheck", "Location was null")
@@ -144,7 +143,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkIfUserIsInChat(chatroomId: String, eventId: String, inviteVersion: Long) {
+    private fun checkIfUserIsInChat(chatroomId: String, eventId: String, inviteVersion: Long, eventName: String) {
         val userId = FirebaseUtil.currentUserId() ?: return
 
         FirebaseFirestore.getInstance().collection("chatrooms")
@@ -154,20 +153,19 @@ class MainActivity : AppCompatActivity() {
                 val chatroom = doc.toObject(ChatRoomModel::class.java)
                 if (chatroom != null) {
                     if (!chatroom.userIds.contains(userId)) {
-                        showJoinEventPopup(chatroomId, eventId, inviteVersion)
+                        showJoinEventPopup(chatroomId, eventId, inviteVersion, eventName)
                     }
                 }
             }
     }
 
 
-    private fun showJoinEventPopup(chatroomId: String, eventId: String, inviteVersion: Long) {
+    private fun showJoinEventPopup(chatroomId: String, eventId: String, inviteVersion: Long, eventName: String) {
         AlertDialog.Builder(this)
-            .setTitle("Nearby Event")
-            .setMessage("You're near an active event! Join the group chat?")
-            .setPositiveButton("Join") { _, _ -> joinEventChat(chatroomId) } // ✅ fix here
+            .setTitle("Event Invitation")
+            .setMessage("You're near the event: **$eventName**. Join the group chat?")
+            .setPositiveButton("Join") { _, _ -> joinEventChat(chatroomId) }
             .setNegativeButton("No") { _, _ ->
-                // Save declined event with inviteVersion
                 sharedPreferences.edit().putLong(eventId, inviteVersion).apply()
             }
             .show()

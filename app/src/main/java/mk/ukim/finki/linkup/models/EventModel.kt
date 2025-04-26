@@ -10,5 +10,6 @@ data class EventModel(
     val createdBy: String = "",
     val chatroomId: String = "",
     val timestamp: Timestamp = Timestamp.now(),
-    val inviteVersion: Long = 1
+    val inviteVersion: Long = 1,
+    var eventName: String = ""
 )
