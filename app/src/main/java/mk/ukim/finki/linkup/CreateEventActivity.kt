@@ -24,19 +24,41 @@ import java.util.*
 class CreateEventActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var createButton: Button
     private lateinit var eventNameInput: EditText
+    private lateinit var radiusInput: EditText
+    private lateinit var createEventButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_event)
 
-        eventNameInput = findViewById(R.id.event_name_input)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        createButton = findViewById(R.id.create_event_chat_btn)
 
-        createButton.setOnClickListener {
-            requestLocationAndCreateEvent()
+        eventNameInput = findViewById(R.id.event_name_input)
+        radiusInput = findViewById(R.id.event_radius_input)
+        createEventButton = findViewById(R.id.create_event_button)
+
+        createEventButton.setOnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    1001
+                )
+                return@setOnClickListener
+            }
+
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    createEventWithLocation(location)
+                } else {
+                    Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -70,27 +92,32 @@ class CreateEventActivity : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         val currentUserId = FirebaseUtil.currentUserId() ?: return
 
+        val eventName = eventNameInput.text.toString().trim()
+        val radius = radiusInput.text.toString().toDoubleOrNull()
+
+        if (eventName.isEmpty() || radius == null) {
+            Toast.makeText(this, "Enter event name and radius", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val eventId = UUID.randomUUID().toString()
         val chatroomId = UUID.randomUUID().toString()
-
-        val eventName = eventNameInput.text.toString().trim() // 👈 get event name from input field
 
         val event = EventModel(
             eventId = eventId,
             location = GeoPoint(location.latitude, location.longitude),
-            radius = 100.0,
+            radius = radius,
             chatroomId = chatroomId,
             createdBy = currentUserId,
             timestamp = Timestamp.now(),
-            inviteVersion = 1,
-            eventName = eventName // 👈 save the event name
+            eventName = eventName
         )
 
         val chatroom = ChatRoomModel(
             chatroomId = chatroomId,
             userIds = listOfNotNull(currentUserId),
             isGroup = true,
-            groupName = eventName, // 👈 better! use event name instead of hardcoded "Event Chat"
+            groupName = eventName,
             lastMessage = "",
             lastMessageSenderId = "",
             lastMessageTimestamp = Timestamp.now(),
@@ -100,15 +127,13 @@ class CreateEventActivity : AppCompatActivity() {
         db.collection("events").document(eventId).set(event)
         db.collection("chatrooms").document(chatroomId).set(chatroom)
             .addOnSuccessListener {
-                Toast.makeText(this, "Event chat created!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show()
                 finish()
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to create event chat", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to create event", Toast.LENGTH_SHORT).show()
             }
     }
-
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

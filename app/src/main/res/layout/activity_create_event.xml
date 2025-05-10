@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:padding="16dp">
 
-    <EditText
-        android:id="@+id/event_name_input"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Event Name"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edit_text_rounded_corner"
-        android:padding="10dp" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/create_event_chat_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Create Event Chat"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/event_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Event Name"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_rounded_corner"/>
+
+        <EditText
+            android:id="@+id/event_radius_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Event Radius (meters)"
+            android:inputType="numberDecimal"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/create_event_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Event"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>

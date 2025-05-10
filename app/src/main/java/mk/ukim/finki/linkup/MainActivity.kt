@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -73,6 +74,26 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         startLocationUpdates()
+        forceLocationUpdate()
+
+    }
+    private fun forceLocationUpdate() {
+        val locationRequest = LocationRequest.create().apply {
+            interval = 2000 // 2 seconds for testing
+            fastestInterval = 1000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    val location = locationResult.lastLocation
+                    if (location != null) {
+                        android.util.Log.d("LocationUpdate", "Updated Location: (${location.latitude}, ${location.longitude})")
+                    }
+                }
+            }, Looper.getMainLooper())
+        }
     }
 
     override fun onPause() {
@@ -85,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         locationHandler = Handler(mainLooper)
         locationRunnable = Runnable {
             checkNearbyEvents()
-            locationHandler.postDelayed(locationRunnable, 10000) // check every 10 seconds
+            locationHandler.postDelayed(locationRunnable, 10000)
         }
         locationHandler.post(locationRunnable)
         isCheckingNearbyEvents = true
@@ -111,13 +132,12 @@ class MainActivity : AppCompatActivity() {
                     longitude = location.longitude
                 }
 
-                android.util.Log.d("NearbyCheck", "User location: (${userLoc.latitude}, ${userLoc.longitude})")
+                android.util.Log.d("LocationCheck", "User location - Latitude: ${userLoc.latitude}, Longitude: ${userLoc.longitude}")
 
                 FirebaseFirestore.getInstance().collection("events").get()
                     .addOnSuccessListener { snapshot ->
                         for (doc in snapshot.documents) {
                             val event = doc.toObject(EventModel::class.java) ?: continue
-
                             val eventLoc = Location("").apply {
                                 latitude = event.location.latitude
                                 longitude = event.location.longitude
@@ -125,27 +145,23 @@ class MainActivity : AppCompatActivity() {
 
                             val distance = userLoc.distanceTo(eventLoc)
 
-                            if (distance <= event.radius) {
-                                val savedVersion = sharedPreferences.getLong(event.eventId, -1)
+                            val savedVersion = sharedPreferences.getLong(event.eventId, -1)
 
-                                if (savedVersion >= event.inviteVersion) {
-                                    android.util.Log.d("NearbyCheck", "User already declined event ${event.eventId} (inviteVersion=$savedVersion)")
-                                } else {
-                                    // 👇 now pass eventName
-                                    checkIfUserIsInChat(event.chatroomId, event.eventId, event.inviteVersion, event.eventName)
-                                }
+                            if (distance <= event.radius) {
+                                if (savedVersion >= event.inviteVersion) continue
+                                checkIfUserIsInChat(event.chatroomId, event.eventId, inviteVersion = event.inviteVersion)
+                            } else {
+                                checkIfUserLeftChat(event.chatroomId, event.eventId)
                             }
                         }
                     }
-            } else {
-                android.util.Log.d("NearbyCheck", "Location was null")
             }
         }
     }
 
-    private fun checkIfUserIsInChat(chatroomId: String, eventId: String, inviteVersion: Long, eventName: String) {
-        val userId = FirebaseUtil.currentUserId() ?: return
 
+    private fun checkIfUserIsInChat(chatroomId: String, eventId: String, inviteVersion: Long) {
+        val userId = FirebaseUtil.currentUserId() ?: return
         FirebaseFirestore.getInstance().collection("chatrooms")
             .document(chatroomId)
             .get()
@@ -153,17 +169,30 @@ class MainActivity : AppCompatActivity() {
                 val chatroom = doc.toObject(ChatRoomModel::class.java)
                 if (chatroom != null) {
                     if (!chatroom.userIds.contains(userId)) {
-                        showJoinEventPopup(chatroomId, eventId, inviteVersion, eventName)
+                        showJoinEventPopup(chatroomId, eventId, inviteVersion, chatroom.groupName)
                     }
                 }
             }
     }
-
+    private fun checkIfUserLeftChat(chatroomId: String, eventId: String) {
+        val userId = FirebaseUtil.currentUserId() ?: return
+        FirebaseFirestore.getInstance().collection("chatrooms")
+            .document(chatroomId)
+            .get()
+            .addOnSuccessListener { doc ->
+                val chatroom = doc.toObject(ChatRoomModel::class.java)
+                if (chatroom != null && chatroom.userIds.contains(userId)) {
+                    FirebaseFirestore.getInstance().collection("chatrooms")
+                        .document(chatroomId)
+                        .update("userIds", FieldValue.arrayRemove(userId))
+                }
+            }
+    }
 
     private fun showJoinEventPopup(chatroomId: String, eventId: String, inviteVersion: Long, eventName: String) {
         AlertDialog.Builder(this)
-            .setTitle("Event Invitation")
-            .setMessage("You're near the event: **$eventName**. Join the group chat?")
+            .setTitle("Nearby Event: $eventName")
+            .setMessage("You're near an active event! Join the group chat?")
             .setPositiveButton("Join") { _, _ -> joinEventChat(chatroomId) }
             .setNegativeButton("No") { _, _ ->
                 sharedPreferences.edit().putLong(eventId, inviteVersion).apply()
@@ -171,16 +200,18 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-
     private fun joinEventChat(chatroomId: String) {
         val userId = FirebaseUtil.currentUserId() ?: return
-
         FirebaseFirestore.getInstance().collection("chatrooms")
             .document(chatroomId)
             .update("userIds", FieldValue.arrayUnion(userId))
             .addOnSuccessListener {
                 sharedPreferences.edit().remove(chatroomId).apply()
-                android.util.Log.d("NearbyCheck", "User joined event chat $chatroomId and removed decline state")
             }
     }
 }
+
+
+
+
+
