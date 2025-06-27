@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import mk.ukim.finki.linkup.models.ChatMessageModel
+import mk.ukim.finki.linkup.adapter.GroupMemberAdapter
+import android.view.Gravity
 
 class ChatActivity : AppCompatActivity() {
 
@@ -34,6 +37,11 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var chatroomId: String
     private lateinit var adapter: ChatRecyclerAdapter
     private lateinit var resendInviteButton: Button
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var membersRecyclerView: RecyclerView
+    private lateinit var membersAdapter: GroupMemberAdapter
+    private lateinit var membersBtn: ImageButton
+    private val memberList = mutableListOf<UserModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +67,15 @@ class ChatActivity : AppCompatActivity() {
         backButton = findViewById(R.id.back_btn)
         otherUsername = findViewById(R.id.other_username)
         recyclerView = findViewById(R.id.chat_recycler_view)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        membersRecyclerView = findViewById(R.id.members_recycler_view)
+        membersBtn = findViewById(R.id.members_btn)
+
+        membersRecyclerView.layoutManager = LinearLayoutManager(this)
+        membersAdapter = GroupMemberAdapter(memberList)
+        membersRecyclerView.adapter = membersAdapter
+        membersBtn.setOnClickListener { drawerLayout.openDrawer(Gravity.END) }
+        membersBtn.visibility = View.GONE
 
         backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -149,18 +166,20 @@ class ChatActivity : AppCompatActivity() {
 
                 if (chatroomModel.isGroup) {
                     otherUsername.text = chatroomModel.groupName
-
+                    membersBtn.visibility = View.VISIBLE
                     if (chatroomModel.creatorId == FirebaseUtil.currentUserId()) {
                         resendInviteButton.visibility = View.VISIBLE
                     } else {
                         resendInviteButton.visibility = View.GONE
                     }
+                    loadGroupMembers()
                 } else {
                     val otherUserId = chatroomModel.userIds.first { it != FirebaseUtil.currentUserId() }
                     FirebaseUtil.getUserReference(otherUserId).get().addOnSuccessListener { userDoc ->
                         val otherUser = userDoc.toObject(UserModel::class.java)
                         otherUsername.text = otherUser?.username ?: "User"
                     }
+                    membersBtn.visibility = View.GONE
                 }
 
                 setupChatRecyclerView()
@@ -187,7 +206,16 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
     }
-
+    private fun loadGroupMembers() {
+        memberList.clear()
+        for (id in chatroomModel.userIds) {
+            FirebaseUtil.getUserReference(id).get().addOnSuccessListener { doc ->
+                doc.toObject(UserModel::class.java)?.let { user ->
+                    memberList.add(user)
+                    membersAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+    }
 
 }
-
