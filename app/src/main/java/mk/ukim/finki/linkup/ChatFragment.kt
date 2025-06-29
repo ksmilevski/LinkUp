@@ -50,7 +50,7 @@ class ChatFragment : Fragment() {
             .where(
                 Filter.or(
                     Filter.equalTo("group", true),
-                    Filter.notEqualTo("lastMessage", "")
+                    Filter.greaterThan("lastMessageTimestamp", Timestamp(0, 0))
                 )
             )
             .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
