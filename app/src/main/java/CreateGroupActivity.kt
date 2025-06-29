@@ -92,7 +92,7 @@ class CreateGroupActivity : AppCompatActivity() {
             groupName = groupName,
             lastMessage = "",
             lastMessageSenderId = "",
-            lastMessageTimestamp = Timestamp(0, 0)
+            lastMessageTimestamp = Timestamp.now()
         )
 
         FirebaseUtil.getChatroomReference(chatroomId).set(chatroom)
