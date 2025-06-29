@@ -49,8 +49,8 @@ class ChatFragment : Fragment() {
             .whereArrayContains("userIds", currentId)
             .where(
                 Filter.or(
-                    Filter.equalTo("isGroup", true),
-                    Filter.greaterThan("lastMessageTimestamp", Timestamp(0, 0))
+                    Filter.equalTo("group", true),
+                    Filter.notEqualTo("lastMessage", "")
                 )
             )
             .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
