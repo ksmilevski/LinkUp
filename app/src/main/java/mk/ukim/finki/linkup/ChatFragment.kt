@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.Filter
 import mk.ukim.finki.linkup.adapter.RecentChatRecyclerAdapter
 import mk.ukim.finki.linkup.models.ChatRoomModel
 import mk.ukim.finki.linkup.utils.FirebaseUtil
@@ -43,9 +44,15 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val currentId = FirebaseUtil.currentUserId() ?: ""
         val query = FirebaseUtil.allChatroomCollectionReference()
-            .whereArrayContains("userIds", FirebaseUtil.currentUserId() ?: "")
-            .whereGreaterThan("lastMessageTimestamp", Timestamp(0, 0))
+            .whereArrayContains("userIds", currentId)
+            .where(
+                Filter.or(
+                    Filter.equalTo("isGroup", true),
+                    Filter.greaterThan("lastMessageTimestamp", Timestamp(0, 0))
+                )
+            )
             .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
 
         val options = FirestoreRecyclerOptions.Builder<ChatRoomModel>()
