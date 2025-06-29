@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 data class ChatRoomModel(
     var chatroomId: String = "",
     var userIds: List<String> = emptyList(),
-    var lastMessageTimestamp: Timestamp = Timestamp.now(),
+    var lastMessageTimestamp: Timestamp = Timestamp(0, 0),
     var lastMessageSenderId: String = "",
     var lastMessage: String = "",
 

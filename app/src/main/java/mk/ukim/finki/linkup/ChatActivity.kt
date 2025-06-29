@@ -183,6 +183,24 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 setupChatRecyclerView()
+            } else if (::otherUser.isInitialized) {
+                val currentId = FirebaseUtil.currentUserId()
+                if (currentId.isNullOrEmpty()) {
+                    Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
+                    finish()
+                    return@addOnSuccessListener
+                }
+                chatroomModel = ChatRoomModel(
+                    chatroomId = chatroomId,
+                    userIds = listOf(currentId, otherUser.userId)
+                )
+                FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel)
+
+                otherUsername.text = otherUser.username
+                membersBtn.visibility = View.GONE
+                resendInviteButton.visibility = View.GONE
+
+                setupChatRecyclerView()
             } else {
                 Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
                 finish()
