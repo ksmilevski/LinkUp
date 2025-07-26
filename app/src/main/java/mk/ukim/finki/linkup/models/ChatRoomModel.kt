@@ -2,11 +2,13 @@ package mk.ukim.finki.linkup.models
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.PropertyName
+import com.google.firebase.firestore.ServerTimestamp
 
 data class ChatRoomModel(
     var chatroomId: String = "",
     var userIds: List<String> = emptyList(),
-    var lastMessageTimestamp: Timestamp = Timestamp(0, 0),
+    @get:ServerTimestamp
+    var lastMessageTimestamp: Timestamp? = null,
     var lastMessageSenderId: String = "",
     var lastMessage: String = "",
 

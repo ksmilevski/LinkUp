@@ -61,7 +61,8 @@ class FirebaseUtil {
             return allUserCollectionReference().document(otherUserId)
         }
 
-        fun timestampToString(timestamp: Timestamp): String {
+        fun timestampToString(timestamp: Timestamp?): String {
+            if (timestamp == null) return ""
             val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
             return sdf.format(timestamp.toDate())
         }

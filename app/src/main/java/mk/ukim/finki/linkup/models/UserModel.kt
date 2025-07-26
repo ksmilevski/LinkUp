@@ -1,22 +1,12 @@
 package mk.ukim.finki.linkup.models
 
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.Exclude
 
-data class UserModel (
-
+data class UserModel(
     var phone: String = "",
     var username: String = "",
     var createdTimestamp: Timestamp = Timestamp.now(),
     var userId: String = "",
-    var isSelected: Boolean = false // <-- NEW
-
-
-//    constructor(createdTimestamp: Timestamp, username: String, phone: String) {
-//        this.createdTimestamp = createdTimestamp
-//        this.username = username
-//        this.phone = phone
-//    }
-){
-    constructor(createdTimestamp: Timestamp, username: String, phone: String, userId: String)
-            : this(phone, username, createdTimestamp, userId)
-}
+    @get:Exclude @set:Exclude var isSelected: Boolean = false
+)

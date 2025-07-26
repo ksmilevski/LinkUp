@@ -120,7 +120,6 @@ class CreateEventActivity : AppCompatActivity() {
             groupName = eventName,
             lastMessage = "",
             lastMessageSenderId = "",
-            lastMessageTimestamp = Timestamp.now(),
             creatorId = currentUserId
         )
 

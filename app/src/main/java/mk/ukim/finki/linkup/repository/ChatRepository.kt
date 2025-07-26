@@ -1,8 +1,7 @@
 package mk.ukim.finki.linkup.repository
 
-import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import mk.ukim.finki.linkup.models.ChatMessageModel
 import mk.ukim.finki.linkup.models.ChatRoomModel
@@ -27,8 +26,7 @@ class ChatRepository {
     }
 
     suspend fun sendMessage(chatroomId: String, message: String, senderId: String) {
-        val timestamp = Timestamp.now()
-        val chatMessage = ChatMessageModel(message, senderId, timestamp)
+        val chatMessage = ChatMessageModel(message, senderId)
         firestore.collection("chatrooms")
             .document(chatroomId)
             .collection("chats")
@@ -36,13 +34,12 @@ class ChatRepository {
             .await()
         firestore.collection("chatrooms")
             .document(chatroomId)
-            .set(
+            .update(
                 mapOf(
                     "lastMessage" to message,
-                    "lastMessageTimestamp" to timestamp,
+                    "lastMessageTimestamp" to FieldValue.serverTimestamp(),
                     "lastMessageSenderId" to senderId
-                ),
-                SetOptions.merge()
+                )
             )
             .await()
     }

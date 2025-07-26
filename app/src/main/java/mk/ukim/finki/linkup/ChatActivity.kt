@@ -168,6 +168,20 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
     }
+
+    override fun onStop() {
+        super.onStop()
+        if (::adapter.isInitialized) {
+            adapter.stopListening()
+        }
+    }
+
+    override fun onDestroy() {
+        if (::adapter.isInitialized) {
+            adapter.stopListening()
+        }
+        super.onDestroy()
+    }
     private fun loadGroupMembers() {
         memberList.clear()
         for (id in chatroomModel.userIds) {
