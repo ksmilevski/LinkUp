@@ -2,16 +2,16 @@
     <string name="app_name">LinkUp</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="toast_invitations_resent">Invitations resent successfully.</string>
-    <string name="toast_failed_resend_invitations">Couldn't resend invitations.</string>
+    <string name="toast_failed_resend_invitations">Couldn\'t resend invitations.</string>
     <string name="toast_unable_get_location">Location unavailable.</string>
     <string name="toast_unable_fetch_location">Could not fetch current location.</string>
     <string name="toast_enter_event_details">Please enter event name and radius.</string>
     <string name="toast_event_created">Event created.</string>
-    <string name="toast_event_create_failed">Couldn't create event.</string>
+    <string name="toast_event_create_failed">Couldn\'t create event.</string>
     <string name="toast_enter_group_name">Please enter a group name.</string>
     <string name="toast_select_user">Select at least one user.</string>
     <string name="toast_group_created">Group created successfully.</string>
-    <string name="toast_group_failed">Couldn't create group.</string>
+    <string name="toast_group_failed">Couldn\'t create group.</string>
     <string name="error_invalid_username">Invalid username.</string>
     <string name="error_phone_invalid">Invalid phone number.</string>
     <string name="error_username_short">Username must have at least 3 characters.</string>
@@ -22,5 +22,5 @@
     <string name="update_failed">Update failed.</string>
     <string name="leave_group">Leave Group</string>
     <string name="left_group">You left the group.</string>
-    <string name="leave_group_failed">Couldn't leave group.</string>
+    <string name="leave_group_failed">Couldn\'t leave group.</string>
 </resources>
