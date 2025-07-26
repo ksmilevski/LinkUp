@@ -56,7 +56,11 @@ class CreateEventActivity : AppCompatActivity() {
                 if (location != null) {
                     createEventWithLocation(location)
                 } else {
-                    Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.toast_unable_get_location),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -82,7 +86,11 @@ class CreateEventActivity : AppCompatActivity() {
                 if (location != null) {
                     createEventWithLocation(location)
                 } else {
-                    Toast.makeText(this, "Unable to fetch location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.toast_unable_fetch_location),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -96,12 +104,18 @@ class CreateEventActivity : AppCompatActivity() {
         val radius = radiusInput.text.toString().toDoubleOrNull()
 
         if (eventName.isEmpty() || radius == null) {
-            Toast.makeText(this, "Enter event name and radius", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.toast_enter_event_details),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
-        val eventId = UUID.randomUUID().toString()
-        val chatroomId = UUID.randomUUID().toString()
+        val eventRef = db.collection("events").document()
+        val eventId = eventRef.id
+        val chatroomRef = db.collection("chatrooms").document()
+        val chatroomId = chatroomRef.id
 
         val event = EventModel(
             eventId = eventId,
@@ -123,14 +137,22 @@ class CreateEventActivity : AppCompatActivity() {
             creatorId = currentUserId
         )
 
-        db.collection("events").document(eventId).set(event)
-        db.collection("chatrooms").document(chatroomId).set(chatroom)
+        eventRef.set(event)
+        chatroomRef.set(chatroom)
             .addOnSuccessListener {
-                Toast.makeText(this, "Event created successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_event_created),
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to create event", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_event_create_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 

@@ -10,10 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import mk.ukim.finki.linkup.models.ChatRoomModel
 import mk.ukim.finki.linkup.utils.FirebaseUtil
-import com.google.firebase.Timestamp
 import mk.ukim.finki.linkup.mk.ukim.finki.linkup.adapter.UserSelectAdapter
 import mk.ukim.finki.linkup.models.UserModel
-import java.util.UUID
 
 class CreateGroupActivity : AppCompatActivity() {
 
@@ -36,12 +34,20 @@ class CreateGroupActivity : AppCompatActivity() {
         createGroupButton.setOnClickListener {
             val groupName = groupNameInput.text.toString().trim()
             if (groupName.isEmpty()) {
-                Toast.makeText(this, "Enter group name", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_enter_group_name),
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
             if (selectedUserIds.isEmpty()) {
-                Toast.makeText(this, "Select at least one user", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_select_user),
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
@@ -76,7 +82,8 @@ class CreateGroupActivity : AppCompatActivity() {
     }
 
     private fun createGroupChat(selectedUserIds: List<String>, groupName: String) {
-        val chatroomId = UUID.randomUUID().toString()
+        val chatroomRef = FirebaseUtil.allChatroomCollectionReference().document()
+        val chatroomId = chatroomRef.id
 
         val allUserIds = selectedUserIds.toMutableList()
         val currentId = FirebaseUtil.currentUserId()
@@ -94,16 +101,24 @@ class CreateGroupActivity : AppCompatActivity() {
             lastMessageSenderId = ""
         )
 
-        FirebaseUtil.getChatroomReference(chatroomId).set(chatroom)
+        chatroomRef.set(chatroom)
             .addOnSuccessListener {
-                Toast.makeText(this, "Group created!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_group_created),
+                    Toast.LENGTH_SHORT
+                ).show()
                 val intent = Intent(this, ChatActivity::class.java)
                 intent.putExtra("chatroomId", chatroomId)
                 startActivity(intent)
                 finish()
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to create group", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_group_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 }

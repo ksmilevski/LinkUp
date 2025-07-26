@@ -82,7 +82,10 @@ class LoginOtpActivity : AppCompatActivity() {
 
                 //ako ima greska (pogresen br, prob so internet, firebase ako ne e aktiviran
                 override fun onVerificationFailed(e: FirebaseException) {
-                    AndroidUtil.showToast(applicationContext, "Otp verification failed")
+                    AndroidUtil.showToast(
+                        applicationContext,
+                        getString(R.string.toast_otp_failed)
+                    )
                     Log.e("OTP_ERROR", "Verification failed", e)
                     setInProgress(false)
                 }
@@ -95,7 +98,10 @@ class LoginOtpActivity : AppCompatActivity() {
                     super.onCodeSent(verificationId, forceResentingToken)
                     verificationCode = verificationId
                     resendingToken = forceResentingToken
-                    AndroidUtil.showToast(applicationContext, "Otp sent successfully")
+                    AndroidUtil.showToast(
+                        applicationContext,
+                        getString(R.string.toast_otp_sent)
+                    )
                     setInProgress(false)
                 }
             })
@@ -126,7 +132,10 @@ class LoginOtpActivity : AppCompatActivity() {
         mAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener { task ->
             setInProgress(false)
             if (task.isSuccessful) {
-                AndroidUtil.showToast(applicationContext, "intent to next act")
+                AndroidUtil.showToast(
+                    applicationContext,
+                    getString(R.string.toast_intent_next_act)
+                )
 
 
                 //ako e uspesno odi na drug ekran

@@ -43,7 +43,7 @@ class LoginUsernameActivity : AppCompatActivity() {
         val username = usernameInput.text.toString()
 
         if (username.isEmpty() || username.length < 3) {
-            usernameInput.error = "Username length should be at least 3 chars"
+            usernameInput.error = getString(R.string.error_username_short)
             return
         }
 

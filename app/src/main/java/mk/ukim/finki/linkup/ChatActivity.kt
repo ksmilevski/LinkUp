@@ -131,6 +131,7 @@ class ChatActivity : AppCompatActivity() {
 
         val options = FirestoreRecyclerOptions.Builder<ChatMessageModel>()
             .setQuery(query, ChatMessageModel::class.java)
+            .setLifecycleOwner(this)
             .build()
 
         adapter = ChatRecyclerAdapter(options, applicationContext, chatroomModel)
@@ -141,7 +142,6 @@ class ChatActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = manager
         recyclerView.adapter = adapter
-        adapter.startListening()
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -160,28 +160,24 @@ class ChatActivity : AppCompatActivity() {
                     val eventDoc = snapshot.documents[0]
                     eventDoc.reference.update("inviteVersion", FieldValue.increment(1))
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Invitations resent!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                getString(R.string.toast_invitations_resent),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         .addOnFailureListener {
-                            Toast.makeText(this, "Failed to resend invitations!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                getString(R.string.toast_failed_resend_invitations),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                 }
             }
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (::adapter.isInitialized) {
-            adapter.stopListening()
-        }
-    }
-
-    override fun onDestroy() {
-        if (::adapter.isInitialized) {
-            adapter.stopListening()
-        }
-        super.onDestroy()
-    }
+    // FirestoreRecyclerAdapter lifecycle handled automatically via setLifecycleOwner
     private fun loadGroupMembers() {
         memberList.clear()
         for (id in chatroomModel.userIds) {

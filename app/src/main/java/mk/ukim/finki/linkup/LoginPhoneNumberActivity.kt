@@ -38,7 +38,7 @@ class LoginPhoneNumberActivity : AppCompatActivity() {
         countryCodePicker.registerCarrierNumberEditText(phoneInput) //prefiksot na drzavata avtomatski se dodava, a korisnikot go vnesuva brojot
         sendOtpBtn.setOnClickListener{
             if (!countryCodePicker.isValidFullNumber) {
-                phoneInput.error = "Phone number not valid";
+                phoneInput.error = getString(R.string.error_phone_invalid)
                 return@setOnClickListener //ako ne e validen brojot, intentot ne se kreira, zavrshuva tuka
             }
 

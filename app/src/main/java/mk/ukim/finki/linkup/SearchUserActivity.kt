@@ -40,7 +40,7 @@ class SearchUserActivity : AppCompatActivity() {
         searchButton.setOnClickListener {
             val searchTerm = searchInput.text.toString()
             if (searchTerm.isEmpty() || searchTerm.length < 3) {
-                searchInput.error = "Invalid Username"
+                searchInput.error = getString(R.string.error_invalid_username)
                 return@setOnClickListener
             }
             setupSearchRecyclerView(searchTerm)
@@ -56,33 +56,14 @@ class SearchUserActivity : AppCompatActivity() {
 
         val options = FirestoreRecyclerOptions.Builder<UserModel>()
             .setQuery(query, UserModel::class.java)
+            .setLifecycleOwner(this)
             .build()
 
         adapter = SearchUserRecyclerAdapter(options, applicationContext)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-        adapter.startListening()
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (::adapter.isInitialized) { //dali e inicijaliziran (dali e povikan setupSearchRecyclerView) bidejki najgore e lateinit
-            adapter.startListening()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (::adapter.isInitialized) {
-            adapter.stopListening()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (::adapter.isInitialized) {
-            adapter.startListening()
-        }
-    }
+    // FirestoreRecyclerAdapter lifecycle is handled via setLifecycleOwner
 
 }

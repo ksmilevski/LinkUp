@@ -64,7 +64,7 @@ class ProfileFragment : Fragment() {
 
         //validacija
         if (newUsername.isEmpty() || newUsername.length < 3) {
-            usernameInput.error = "Username length should be at least 3 chars"
+            usernameInput.error = getString(R.string.error_username_short)
             return
         }
         currentUserModel.username = newUsername
@@ -76,7 +76,11 @@ class ProfileFragment : Fragment() {
         FirebaseUtil.currentUserDetails()?.set(currentUserModel)
             ?.addOnCompleteListener { task ->
                 setInProgress(false)
-                val message = if (task.isSuccessful) "Updated successfully" else "Update failed"
+                val message = if (task.isSuccessful) {
+                    getString(R.string.update_successful)
+                } else {
+                    getString(R.string.update_failed)
+                }
                 context?.let { AndroidUtil.showToast(it, message) }
             }
     }

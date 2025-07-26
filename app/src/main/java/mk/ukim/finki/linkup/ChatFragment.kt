@@ -57,32 +57,13 @@ class ChatFragment : Fragment() {
 
         val options = FirestoreRecyclerOptions.Builder<ChatRoomModel>()
             .setQuery(query, ChatRoomModel::class.java)
+            .setLifecycleOwner(viewLifecycleOwner)
             .build()
 
         adapter = RecentChatRecyclerAdapter(options, requireContext())
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
-        adapter.startListening()
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (::adapter.isInitialized) {
-            adapter.startListening()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (::adapter.isInitialized) {
-            adapter.stopListening()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (::adapter.isInitialized) {
-            adapter.notifyDataSetChanged()
-        }
-    }
+    // FirestoreRecyclerAdapter lifecycle is managed via setLifecycleOwner
 }

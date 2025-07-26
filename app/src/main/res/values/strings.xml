@@ -2,4 +2,23 @@
     <string name="app_name">LinkUp</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="toast_invitations_resent">Invitations resent!</string>
+    <string name="toast_failed_resend_invitations">Failed to resend invitations!</string>
+    <string name="toast_unable_get_location">Unable to get location</string>
+    <string name="toast_unable_fetch_location">Unable to fetch location</string>
+    <string name="toast_enter_event_details">Enter event name and radius</string>
+    <string name="toast_event_created">Event created successfully!</string>
+    <string name="toast_event_create_failed">Failed to create event</string>
+    <string name="toast_enter_group_name">Enter group name</string>
+    <string name="toast_select_user">Select at least one user</string>
+    <string name="toast_group_created">Group created!</string>
+    <string name="toast_group_failed">Failed to create group</string>
+    <string name="error_invalid_username">Invalid Username</string>
+    <string name="error_phone_invalid">Phone number not valid</string>
+    <string name="error_username_short">Username length should be at least 3 chars</string>
+    <string name="toast_otp_failed">Otp verification failed</string>
+    <string name="toast_otp_sent">Otp sent successfully</string>
+    <string name="toast_intent_next_act">intent to next act</string>
+    <string name="update_successful">Updated successfully</string>
+    <string name="update_failed">Update failed</string>
 </resources>
