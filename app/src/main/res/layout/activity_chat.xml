@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="@color/white"
                 android:layout_centerVertical="true" />
-        </RelativeLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <Button
             android:id="@+id/resend_invite_button"
@@ -82,7 +82,8 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_alignParentBottom="true"
-            android:padding="8dp">
+            android:padding="8dp"
+            android:background="@drawable/bottom_input_background">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -91,7 +92,8 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:layout_toLeftOf="@id/message_send_btn">
+                android:layout_toLeftOf="@id/message_send_btn"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/chat_message_input"
@@ -100,17 +102,16 @@
                     android:hint="Write message here" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <ImageButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/message_send_btn"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="10dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
                 android:src="@drawable/icon_send"
-                app:tint="@color/my_primary" />
+                app:tint="@color/white"
+                app:backgroundTint="@color/my_primary" />
         </RelativeLayout>
     </RelativeLayout>
 
