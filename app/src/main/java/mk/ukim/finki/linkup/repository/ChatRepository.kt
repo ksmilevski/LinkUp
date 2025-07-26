@@ -3,7 +3,7 @@ package mk.ukim.finki.linkup.repository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.android.gms.tasks.await
+import kotlinx.coroutines.tasks.await
 import mk.ukim.finki.linkup.models.ChatMessageModel
 import mk.ukim.finki.linkup.models.ChatRoomModel
 import mk.ukim.finki.linkup.models.UserModel

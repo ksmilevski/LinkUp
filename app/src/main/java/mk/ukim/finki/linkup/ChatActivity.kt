@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.example.easychat.adapter.ChatRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import mk.ukim.finki.linkup.models.ChatRoomModel
@@ -37,6 +38,11 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var chatroomId: String
     private lateinit var adapter: ChatRecyclerAdapter
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var membersRecyclerView: RecyclerView
+    private lateinit var membersAdapter: GroupMemberAdapter
 
     private val memberList = mutableListOf<UserModel>()
 
