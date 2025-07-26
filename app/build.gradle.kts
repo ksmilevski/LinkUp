@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
@@ -70,5 +71,7 @@ dependencies {
     implementation ("com.github.dhaval2404:imagepicker:2.1")
 
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
 }

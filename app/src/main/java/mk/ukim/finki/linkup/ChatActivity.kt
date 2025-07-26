@@ -3,14 +3,13 @@ package mk.ukim.finki.linkup
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.viewModels
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
 import com.example.easychat.adapter.ChatRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import mk.ukim.finki.linkup.models.ChatRoomModel
@@ -24,31 +23,35 @@ import com.google.firebase.firestore.Query
 import mk.ukim.finki.linkup.models.ChatMessageModel
 import mk.ukim.finki.linkup.adapter.GroupMemberAdapter
 import android.view.Gravity
+import mk.ukim.finki.linkup.databinding.ActivityChatBinding
+import mk.ukim.finki.linkup.repository.ChatRepository
+import mk.ukim.finki.linkup.repository.ChatViewModel
+import mk.ukim.finki.linkup.repository.ChatViewModelFactory
 
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var otherUser: UserModel
     private lateinit var chatroomModel: ChatRoomModel
-    private lateinit var messageInput: EditText
-    private lateinit var sendMessageBtn: ImageButton
-    private lateinit var backButton: ImageButton
-    private lateinit var otherUsername: TextView
-    private lateinit var recyclerView: RecyclerView
+
+    private lateinit var binding: ActivityChatBinding
+
     private lateinit var chatroomId: String
     private lateinit var adapter: ChatRecyclerAdapter
-    private lateinit var resendInviteButton: Button
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var membersRecyclerView: RecyclerView
-    private lateinit var membersAdapter: GroupMemberAdapter
-    private lateinit var membersBtn: ImageButton
+
     private val memberList = mutableListOf<UserModel>()
+
+    private val repository = ChatRepository()
+
+    private val viewModel: ChatViewModel by viewModels {
+        ChatViewModelFactory(repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        binding = ActivityChatBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        resendInviteButton = findViewById(R.id.resend_invite_button)
-        resendInviteButton.setOnClickListener {
+        binding.resendInviteButton.setOnClickListener {
             resendInvitations()
         }
 
@@ -62,14 +65,14 @@ class ChatActivity : AppCompatActivity() {
             chatroomId
         }
 
-        messageInput = findViewById(R.id.chat_message_input)
-        sendMessageBtn = findViewById(R.id.message_send_btn)
-        backButton = findViewById(R.id.back_btn)
-        otherUsername = findViewById(R.id.other_username)
-        recyclerView = findViewById(R.id.chat_recycler_view)
-        drawerLayout = findViewById(R.id.drawer_layout)
-        membersRecyclerView = findViewById(R.id.members_recycler_view)
-        membersBtn = findViewById(R.id.members_btn)
+        drawerLayout = binding.drawerLayout
+        recyclerView = binding.chatRecyclerView
+        val messageInput = binding.chatMessageInput
+        val sendMessageBtn = binding.messageSendBtn
+        val backButton = binding.backBtn
+        val otherUsername = binding.otherUsername
+        membersRecyclerView = binding.membersRecyclerView
+        val membersBtn = binding.membersBtn
 
         membersRecyclerView.layoutManager = LinearLayoutManager(this)
         membersAdapter = GroupMemberAdapter(memberList)
@@ -84,11 +87,35 @@ class ChatActivity : AppCompatActivity() {
         sendMessageBtn.setOnClickListener {
             val message = messageInput.text.toString().trim()
             if (message.isNotEmpty()) {
-                sendMessageToUser(message)
+                viewModel.sendMessage(chatroomId, message)
+                messageInput.setText("")
             }
         }
 
-        getOrCreateChatroomModel()
+        viewModel.chatRoom.observe(this) { room ->
+            chatroomModel = room
+            if (room.isGroup) {
+                otherUsername.text = room.groupName
+                membersBtn.visibility = View.VISIBLE
+                if (room.creatorId == FirebaseUtil.currentUserId()) {
+                    binding.resendInviteButton.visibility = View.VISIBLE
+                } else {
+                    binding.resendInviteButton.visibility = View.GONE
+                }
+                loadGroupMembers()
+            } else {
+                val otherUserId = room.userIds.first { it != FirebaseUtil.currentUserId() }
+                lifecycleScope.launch {
+                    repository.getUser(otherUserId)?.let { user ->
+                        otherUsername.text = user.username
+                    }
+                }
+                membersBtn.visibility = View.GONE
+            }
+            setupChatRecyclerView()
+        }
+
+        viewModel.loadChatRoom(chatroomId, if (::otherUser.isInitialized) otherUser else null)
     }
 
 
@@ -118,95 +145,6 @@ class ChatActivity : AppCompatActivity() {
         })
     }
 
-
-    private fun sendMessageToUser(message:String){
-        chatroomModel.lastMessageTimestamp = Timestamp.now()
-        chatroomModel.lastMessageSenderId = FirebaseUtil.currentUserId()?:"unknown user"
-        chatroomModel.lastMessage = message
-        FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel)
-
-        val chatMessageModel = ChatMessageModel(message, FirebaseUtil.currentUserId()?:"unknown user", Timestamp.now())
-        FirebaseUtil.getChatroomMessageReference(chatroomId).add(chatMessageModel).addOnCompleteListener{
-            task-> if(task.isSuccessful){
-                messageInput.setText("") //ako se prati porakata, sledno treba da e prazno toa kaj shto se pishuva
-//                sendNotification(message)
-            }
-        }
-    }
-
-
-    //proveruva dali postoi veke chatroom ili da kreira nova
-//    private fun getOrCreateChatroomModel() {
-//        FirebaseUtil.getChatroomReference(chatroomId).get().addOnSuccessListener { document ->
-//            if (document.exists()) {
-//                chatroomModel = document.toObject(ChatRoomModel::class.java)!!
-//
-//                if (chatroomModel.isGroup) {
-//                    otherUsername.text = chatroomModel.groupName
-//                } else {
-//                    val otherUserId = chatroomModel.userIds.first { it != FirebaseUtil.currentUserId() }
-//                    FirebaseUtil.getUserReference(otherUserId).get().addOnSuccessListener { userDoc ->
-//                        val otherUser = userDoc.toObject(UserModel::class.java)
-//                        otherUsername.text = otherUser?.username ?: "User"
-//                    }
-//                }
-//
-//                setupChatRecyclerView() // ✅ only call after setting up model and UI
-//            } else {
-//                Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
-//                finish()
-//            }
-//        }
-//    }
-
-    private fun getOrCreateChatroomModel() {
-        FirebaseUtil.getChatroomReference(chatroomId).get().addOnSuccessListener { document ->
-            if (document.exists()) {
-                chatroomModel = document.toObject(ChatRoomModel::class.java)!!
-
-                if (chatroomModel.isGroup) {
-                    otherUsername.text = chatroomModel.groupName
-                    membersBtn.visibility = View.VISIBLE
-                    if (chatroomModel.creatorId == FirebaseUtil.currentUserId()) {
-                        resendInviteButton.visibility = View.VISIBLE
-                    } else {
-                        resendInviteButton.visibility = View.GONE
-                    }
-                    loadGroupMembers()
-                } else {
-                    val otherUserId = chatroomModel.userIds.first { it != FirebaseUtil.currentUserId() }
-                    FirebaseUtil.getUserReference(otherUserId).get().addOnSuccessListener { userDoc ->
-                        val otherUser = userDoc.toObject(UserModel::class.java)
-                        otherUsername.text = otherUser?.username ?: "User"
-                    }
-                    membersBtn.visibility = View.GONE
-                }
-
-                setupChatRecyclerView()
-            } else if (::otherUser.isInitialized) {
-                val currentId = FirebaseUtil.currentUserId()
-                if (currentId.isNullOrEmpty()) {
-                    Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
-                    finish()
-                    return@addOnSuccessListener
-                }
-                chatroomModel = ChatRoomModel(
-                    chatroomId = chatroomId,
-                    userIds = listOf(currentId, otherUser.userId)
-                )
-                FirebaseUtil.getChatroomReference(chatroomId).set(chatroomModel)
-
-                otherUsername.text = otherUser.username
-                membersBtn.visibility = View.GONE
-                resendInviteButton.visibility = View.GONE
-
-                setupChatRecyclerView()
-            } else {
-                Toast.makeText(this, "Chatroom not found!", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        }
-    }
     private fun resendInvitations() {
         FirebaseFirestore.getInstance().collection("events")
             .whereEqualTo("chatroomId", chatroomId)
