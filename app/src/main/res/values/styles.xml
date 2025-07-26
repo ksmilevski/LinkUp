@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="BubbleIncoming" parent="Widget.Material3.MaterialCardView">
+    <style name="BubbleIncoming" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">@color/chat_color_sender</item>
         <item name="shapeAppearance">@style/ShapeIncoming</item>
         <item name="strokeColor">@android:color/transparent</item>
     </style>
-    <style name="BubbleOutgoing" parent="Widget.Material3.MaterialCardView">
+    <style name="BubbleOutgoing" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">@color/chat_color_receiver</item>
         <item name="shapeAppearance">@style/ShapeOutgoing</item>
         <item name="strokeColor">@android:color/transparent</item>
     </style>
 
-    <style name="ShapeIncoming" parent="ShapeAppearance.Material3.SmallComponent">
+    <style name="ShapeIncoming" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerSizeTopLeft">16dp</item>
         <item name="cornerSizeTopRight">16dp</item>
         <item name="cornerSizeBottomRight">16dp</item>
         <item name="cornerSizeBottomLeft">2dp</item>
     </style>
-    <style name="ShapeOutgoing" parent="ShapeAppearance.Material3.SmallComponent">
+    <style name="ShapeOutgoing" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerSizeTopLeft">16dp</item>
         <item name="cornerSizeTopRight">16dp</item>
         <item name="cornerSizeBottomLeft">16dp</item>
