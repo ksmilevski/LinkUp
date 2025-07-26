@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="my_primary">#2196F3</color>
-    <color name="my_secondary">#FBC02D</color>
-    <color name="off_white">#FAFAFA</color>
-    <color name="light_gray">#C3C3C3</color>
+    <color name="my_primary">#90CAF9</color>
+    <color name="my_secondary">#FFD54F</color>
+    <color name="off_white">#121212</color>
+    <color name="light_gray">#888888</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
