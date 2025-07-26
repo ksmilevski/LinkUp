@@ -3,6 +3,9 @@ package mk.ukim.finki.linkup.repository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import mk.ukim.finki.linkup.models.ChatMessageModel
 import mk.ukim.finki.linkup.models.ChatRoomModel
 import mk.ukim.finki.linkup.models.UserModel
@@ -49,5 +52,19 @@ class ChatRepository {
             .document(chatroomId)
             .update("userIds", FieldValue.arrayRemove(userId))
             .await()
+    }
+
+    fun getUserChatRoomsFlow(userId: String): Flow<List<ChatRoomModel>> = callbackFlow {
+        val query = FirebaseUtil.allChatroomCollectionReference()
+            .whereArrayContains("userIds", userId)
+        val registration = query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            val rooms = snapshot?.documents?.mapNotNull { it.toObject(ChatRoomModel::class.java) } ?: emptyList()
+            trySend(rooms)
+        }
+        awaitClose { registration.remove() }
     }
 }

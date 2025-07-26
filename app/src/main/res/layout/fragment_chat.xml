@@ -1,44 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.compose.ui.platform.ComposeView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_compose"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".ChatFragment">
-
-    <!-- Create Group Button -->
-    <Button
-        android:id="@+id/create_group_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create Group"
-        android:layout_margin="12dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:backgroundTint="@color/my_primary"
-        android:textColor="@android:color/white"
-        android:elevation="2dp"/>
-
-    <!-- Create Event Button - placed to the left of Create Group -->
-    <Button
-        android:id="@+id/create_event_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Create Event"
-        android:layout_margin="12dp"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@id/create_group_btn"
-        android:backgroundTint="@color/my_primary"
-        android:textColor="@android:color/white"
-        android:elevation="2dp"/>
-
-    <!-- RecyclerView for chat list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/create_group_btn"
-        android:paddingTop="8dp"
-        android:paddingBottom="12dp"/>
-</RelativeLayout>
-
+    android:layout_height="match_parent" />
