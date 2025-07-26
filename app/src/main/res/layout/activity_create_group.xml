@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:padding="20dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <EditText
         android:id="@+id/group_name_input"
