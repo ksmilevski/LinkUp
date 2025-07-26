@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="BubbleIncoming" parent="Widget.Material3.CardView">
+    <style name="BubbleIncoming" parent="Widget.Material3.MaterialCardView">
         <item name="cardBackgroundColor">@color/chat_color_sender</item>
         <item name="shapeAppearance">@style/ShapeIncoming</item>
         <item name="strokeColor">@android:color/transparent</item>
     </style>
-    <style name="BubbleOutgoing" parent="Widget.Material3.CardView">
+    <style name="BubbleOutgoing" parent="Widget.Material3.MaterialCardView">
         <item name="cardBackgroundColor">@color/chat_color_receiver</item>
         <item name="shapeAppearance">@style/ShapeOutgoing</item>
         <item name="strokeColor">@android:color/transparent</item>
