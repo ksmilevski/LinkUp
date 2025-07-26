@@ -35,4 +35,20 @@ class ChatViewModel(private val repository: ChatRepository) : ViewModel() {
             repository.sendMessage(chatroomId, message, senderId)
         }
     }
+
+    fun leaveGroup(chatroomId: String, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val userId = FirebaseUtil.currentUserId()
+            if (userId != null) {
+                try {
+                    repository.removeUserFromChat(chatroomId, userId)
+                    onComplete(true)
+                } catch (e: Exception) {
+                    onComplete(false)
+                }
+            } else {
+                onComplete(false)
+            }
+        }
+    }
 }

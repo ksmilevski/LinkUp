@@ -21,4 +21,7 @@
     <string name="toast_intent_next_act">intent to next act</string>
     <string name="update_successful">Updated successfully</string>
     <string name="update_failed">Update failed</string>
+    <string name="leave_group">Leave Group</string>
+    <string name="left_group">Left group</string>
+    <string name="leave_group_failed">Failed to leave group</string>
 </resources>

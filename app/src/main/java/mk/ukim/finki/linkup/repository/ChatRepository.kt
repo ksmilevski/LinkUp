@@ -43,4 +43,11 @@ class ChatRepository {
             )
             .await()
     }
+
+    suspend fun removeUserFromChat(chatroomId: String, userId: String) {
+        firestore.collection("chatrooms")
+            .document(chatroomId)
+            .update("userIds", FieldValue.arrayRemove(userId))
+            .await()
+    }
 }

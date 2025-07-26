@@ -43,6 +43,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var membersRecyclerView: RecyclerView
     private lateinit var membersAdapter: GroupMemberAdapter
+    private lateinit var leaveGroupButton: Button
 
     private val memberList = mutableListOf<UserModel>()
 
@@ -79,6 +80,7 @@ class ChatActivity : AppCompatActivity() {
         val otherUsername = binding.otherUsername
         membersRecyclerView = binding.membersRecyclerView
         val membersBtn = binding.membersBtn
+        leaveGroupButton = binding.leaveGroupButton
 
         membersRecyclerView.layoutManager = LinearLayoutManager(this)
         membersAdapter = GroupMemberAdapter(memberList)
@@ -109,6 +111,27 @@ class ChatActivity : AppCompatActivity() {
                     binding.resendInviteButton.visibility = View.GONE
                 }
                 loadGroupMembers()
+
+                FirebaseFirestore.getInstance().collection("events")
+                    .whereEqualTo("chatroomId", chatroomId)
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        if (snapshot.isEmpty) {
+                            leaveGroupButton.visibility = View.VISIBLE
+                            leaveGroupButton.setOnClickListener {
+                                viewModel.leaveGroup(chatroomId) { success ->
+                                    Toast.makeText(
+                                        this,
+                                        if (success) getString(R.string.left_group) else getString(R.string.leave_group_failed),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    if (success) finish()
+                                }
+                            }
+                        } else {
+                            leaveGroupButton.visibility = View.GONE
+                        }
+                    }
             } else {
                 val otherUserId = room.userIds.first { it != FirebaseUtil.currentUserId() }
                 lifecycleScope.launch {
@@ -117,6 +140,7 @@ class ChatActivity : AppCompatActivity() {
                     }
                 }
                 membersBtn.visibility = View.GONE
+                leaveGroupButton.visibility = View.GONE
             }
             setupChatRecyclerView()
         }
@@ -188,6 +212,20 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (::adapter.isInitialized) {
+            adapter.stopListening()
+        }
+    }
+
+    override fun onDestroy() {
+        if (::adapter.isInitialized) {
+            adapter.stopListening()
+        }
+        super.onDestroy()
     }
 
 }
