@@ -63,6 +63,7 @@ class ChatFragment : Fragment() {
         adapter = RecentChatRecyclerAdapter(options, requireContext())
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
+        recyclerView.itemAnimator = null
     }
 
     // FirestoreRecyclerAdapter lifecycle is managed via setLifecycleOwner

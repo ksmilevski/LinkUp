@@ -125,7 +125,13 @@ class ChatActivity : AppCompatActivity() {
                                         if (success) getString(R.string.left_group) else getString(R.string.leave_group_failed),
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    if (success) finish()
+                                    if (success) {
+                                        val intent = Intent(this, MainActivity::class.java).apply {
+                                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        }
+                                        startActivity(intent)
+                                        finish()
+                                    }
                                 }
                             }
                         } else {
