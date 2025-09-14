@@ -4,15 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.material.card.MaterialCardView
 import mk.ukim.finki.linkup.R
 import mk.ukim.finki.linkup.models.ChatMessageModel
 import mk.ukim.finki.linkup.models.ChatRoomModel
-import mk.ukim.finki.linkup.models.UserModel
 import mk.ukim.finki.linkup.utils.FirebaseUtil
 
 class ChatRecyclerAdapter(
@@ -72,8 +71,8 @@ class ChatRecyclerAdapter(
     class ChatMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val leftChatText: TextView = itemView.findViewById(R.id.left_chat_textview)
         val rightChatText: TextView = itemView.findViewById(R.id.right_chat_textview)
-        val leftChatLayout: LinearLayout = itemView.findViewById(R.id.left_chat_layout)
-        val rightChatLayout: LinearLayout = itemView.findViewById(R.id.right_chat_layout)
+        val leftChatLayout: MaterialCardView = itemView.findViewById(R.id.left_chat_layout)
+        val rightChatLayout: MaterialCardView = itemView.findViewById(R.id.right_chat_layout)
         val senderName: TextView = itemView.findViewById(R.id.sender_name_textview)
         val senderNameRight: TextView = itemView.findViewById(R.id.sender_name_right)
 
