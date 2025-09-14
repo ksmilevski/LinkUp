@@ -3,7 +3,7 @@ package mk.ukim.finki.linkup
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,12 +29,12 @@ class ChatFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyler_view)
         setupRecyclerView()
 
-        val createGroupBtn = view.findViewById<Button>(R.id.create_group_btn)
+        val createGroupBtn = view.findViewById<FloatingActionButton>(R.id.create_group_fab)
         createGroupBtn.setOnClickListener {
             val intent = Intent(requireContext(), CreateGroupActivity::class.java)
             startActivity(intent)
         }
-        val createEventBtn = view.findViewById<Button>(R.id.create_event_btn)
+        val createEventBtn = view.findViewById<FloatingActionButton>(R.id.create_event_fab)
         createEventBtn.setOnClickListener {
             val intent = Intent(context, CreateEventActivity::class.java)
             startActivity(intent)

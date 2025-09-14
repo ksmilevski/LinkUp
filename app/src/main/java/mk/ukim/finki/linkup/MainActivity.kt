@@ -8,8 +8,8 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.ImageButton
-import android.widget.RelativeLayout
+import androidx.appcompat.widget.SearchView
+import com.google.android.material.appbar.MaterialToolbar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,8 +24,8 @@ import mk.ukim.finki.linkup.utils.FirebaseUtil
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var searchButton: ImageButton
-    private lateinit var mainToolbar: RelativeLayout
+    private lateinit var searchView: SearchView
+    private lateinit var mainToolbar: MaterialToolbar
     private lateinit var chatFragment: ChatFragment
     private lateinit var profileFragment: ProfileFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -47,14 +47,20 @@ class MainActivity : AppCompatActivity() {
         profileFragment = ProfileFragment()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
-        searchButton = findViewById(R.id.main_searchButton)
+        searchView = findViewById(R.id.main_search_view)
         mainToolbar = findViewById(R.id.main_toolbar)
 
         val params = mainToolbar.layoutParams
         params.height = (resources.displayMetrics.heightPixels * 0.1).toInt()
         mainToolbar.layoutParams = params
 
-        searchButton.setOnClickListener {
+        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                startActivity(Intent(this, SearchUserActivity::class.java))
+                searchView.clearFocus()
+            }
+        }
+        searchView.setOnClickListener {
             startActivity(Intent(this, SearchUserActivity::class.java))
         }
 
