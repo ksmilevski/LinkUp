@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageButton
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var searchButton: ImageButton
+    private lateinit var mainToolbar: RelativeLayout
     private lateinit var chatFragment: ChatFragment
     private lateinit var profileFragment: ProfileFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -46,6 +48,11 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         searchButton = findViewById(R.id.main_searchButton)
+        mainToolbar = findViewById(R.id.main_toolbar)
+
+        val params = mainToolbar.layoutParams
+        params.height = (resources.displayMetrics.heightPixels * 0.1).toInt()
+        mainToolbar.layoutParams = params
 
         searchButton.setOnClickListener {
             startActivity(Intent(this, SearchUserActivity::class.java))
