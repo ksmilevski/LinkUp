@@ -41,9 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/profile_pic_layout"
-                android:layout_toLeftOf="@id/members_btn"
+                android:layout_marginEnd="64dp"
+                android:layout_gravity="center_vertical"
                 android:text="Username"
                 android:textColor="@color/white"
                 android:textSize="22sp"
@@ -54,10 +53,10 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/person_icon"
-                android:layout_alignParentEnd="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:tint="@color/white"
-                android:layout_centerVertical="true" />
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="10dp" />
         </com.google.android.material.appbar.MaterialToolbar>
 
         <Button

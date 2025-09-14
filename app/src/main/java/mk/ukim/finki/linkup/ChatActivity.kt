@@ -165,7 +165,10 @@ class ChatActivity : AppCompatActivity() {
             .setLifecycleOwner(this)
             .build()
 
-        adapter = ChatRecyclerAdapter(options, applicationContext, chatroomModel)
+        // Use the activity context so Material components can access the correct theme
+        // Application context lacks theme information which causes MaterialCardView inflation
+        // to fail with "The style on this component requires your app theme to be Theme.MaterialComponents".
+        adapter = ChatRecyclerAdapter(options, this, chatroomModel)
 
         val manager = LinearLayoutManager(this).apply {
             reverseLayout = true // gi setira porakite vo descending order, poslednoto pishano e najdolu
