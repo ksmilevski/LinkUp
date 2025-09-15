@@ -23,4 +23,5 @@
     <string name="leave_group">Leave Group</string>
     <string name="left_group">You left the group.</string>
     <string name="leave_group_failed">Couldn\'t leave group.</string>
+    <string name="search_users">Search users</string>
 </resources>
